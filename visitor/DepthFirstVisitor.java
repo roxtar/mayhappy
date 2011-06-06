@@ -36,7 +36,7 @@ public class DepthFirstVisitor implements Visitor {
    }
 
    public void visit(NodeToken n) { 
-       System.out.println(n);
+       System.out.print(n);
    }
 
    //
@@ -668,7 +668,7 @@ public class DepthFirstVisitor implements Visitor {
     *       | PrimaryExpression()
     */
    public void visit(Expression n) {
-      n.f0.accept(this);
+       n.f0.accept(this);
    }
 
    /**
