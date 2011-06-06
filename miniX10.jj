@@ -1,0 +1,975 @@
+options {
+  JAVA_UNICODE_ESCAPE = true;
+}
+
+PARSER_BEGIN(MiniX10Parser)
+  public class MiniX10Parser {}
+PARSER_END(MiniX10Parser)
+
+SKIP : /* WHITE SPACE */
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+SPECIAL_TOKEN : /* COMMENTS */
+{
+  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+TOKEN : 
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LSQPAREN: "[" >
+| < RSQPAREN: "]" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < SEMICOLON: ";" >
+| < DOT: "." >
+| < ASSIGN: "=" >
+| < LT: "<" >
+| < PLUS: "+" >
+| < MINUS: "-" >
+| < AND : "&&" >   
+| < NOT : "!" >   
+| < QUESTION: "?" >   
+| < CLASS: "class" >
+| < VALUE: "value" >
+| < FINAL: "final" >
+| < IF: "if" >
+| < ELSE: "else" >
+| < FALSE: "false" >
+| < TRUE: "true" >
+| < WHILE: "while" >
+| < VOID: "void" >
+| < BOOLEAN: "boolean" >   
+| < INTEGER: "int" >   
+| < NEW: "new" >
+| < GET: "get" >
+| < CONTAINS: "contains" >
+| < HIGH: "high" >
+| < LOW: "low" >
+| < NEXT: "next" >
+| < PREV: "prev" >
+| < ISFIRST: "isFirst" >
+| < ISLAST: "isLast" >
+| < COORD: "coord" >
+| < ORDINAL: "ordinal" >
+| < PUBLIC: "public" >
+| < RETURN: "return" >
+| < STATIC: "static" >
+| < STRING: "String" >
+| < THIS: "this" >
+| < PRINTLN: "System.out.println" >
+| < PRINT: "System.out.print" >
+| < PRINTERROR: "System.err.println" >
+| < CURRENTTIME: "System.currentTimeMillis" >
+| < ADDLOCALOPS: "x10.lang.perf.addLocalOps" >
+| < JAVAIOSIZE: "java.io.Integer.SIZE" >
+| < FACTORYPlace: "dist.factory.place" >
+| < FACTORYBlock: "dist.factory.block" >
+| < FACTORYEMPTYREGION: "region.factory.emptyRegion" >
+| < FACTORYPOINT: "point.factory.point" >
+| < JAVALANGOBJECT: "java.lang.Object" >
+| < BREAK: "break" >         
+| < SUPER: "super" >         
+| < THROW: "throw" >         
+| < RUNTIMEEXCEPTION: "RuntimeException" >         
+| < DOUBLE: "double" >         
+| < LONG: "long" >         
+| < SHORT: "short" >         
+| < BYTE: "byte" >         
+| < REGION: "region" >         
+| < ID: "id" >         
+| < PLACES: "place.places" >         
+| < RANK: "rank" >         
+| < DISTRIBUTION: "distribution" >         
+| < DIST: "dist" >         
+| < SWITCH: "switch" >         
+| < ATEACH: "ateach" >         
+| < FINISH: "finish" >         
+| < MAIN: "main" >         
+| < MATH: "Math" >         
+| < SIN: "sin" >         
+| < COS: "cos" >         
+| < POW: "pow" >         
+| < EXP: "exp" >         
+| < SQRT: "sqrt" >         
+| < ABS: "abs" >         
+| < PLACE: "place" >         
+| < MIN: "min" >         
+| < MAX: "max" >         
+| < LOG: "log" >         
+| < SUM: "sum" >         
+| < SIZE: "size" >         
+| < EQUALS: "equals" >         
+// | < TOSTRING: "toString" >         
+| < PRIVATE: "private" >         
+| < FOREACH: "foreach" >         
+| < FINALLY: "finally" >         
+| < POINT: "point" >         
+| < CONTINUE: "continue" >         
+| < INSTANCEOF: "instanceof" >         
+| < DO: "do" >         
+| < FOR: "for" >         
+| < HERE: "here" >         
+| < DISTUNIQUE: "dist.UNIQUE" >         
+| < CASE: "case" >         
+| < ASYNC: "async" >         
+| < OR: "or" >         
+| < DEFAULT_TOKEN: "default" >
+}
+
+TOKEN : /* LITERALS */
+{
+  < INTEGER_LITERAL: ( ["1"-"9"] (["0"-"9"])* | "0" ) >
+|
+  < POINT_LITERAL:
+        <DECIMAL_LITERAL> (["p","P"])
+      | <HEX_LITERAL> (["p","P"])
+      | <OCTAL_LITERAL> (["p","P"])
+  >
+|
+  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  < HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+|
+  < LONG_LITERAL: 
+        <INTEGER_LITERAL> "L"
+      | <HEX_LITERAL> "L"
+  >
+|
+  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
+|
+  < FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+  >
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|
+  < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+}
+
+TOKEN : /* IDENTIFIERS */
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+
+
+TOKEN :
+{
+  < RUNSIGNEDSHIFT: ">>>" >
+| < RSIGNEDSHIFT: ">>" >
+| < GT: ">" >
+}
+
+/* We use productions to match >>>, >> and > so that we can keep the
+ * type declaration syntax with generics clean
+ */
+
+
+/*************************************
+ * The MiniX10 Grammar Starts Here *
+ *************************************/
+
+
+void File() :
+{}
+{
+  ( TopLevelDeclaration() )*
+  <EOF>
+}
+
+void TopLevelDeclaration() :
+{}
+{
+  LOOKAHEAD(12)
+  MainClass() 
+|
+  LOOKAHEAD(2)
+  ClassDeclaration() 
+}
+
+void MainClass() :
+{}
+{
+  "public" "class" Identifier() "{"
+    "public" "static" "void" "main" "(" "String" "[" "]" Identifier() ")"
+    "{" Statement() "}"
+  "}"
+}
+
+
+void ClassDeclaration() :
+{}
+{
+  "class" Identifier() "{" ( ClassMember() )* "}"
+}
+
+void ClassMember() :
+{}
+{
+  LOOKAHEAD( "public" ReturnType() Identifier() "(" )
+  MethodDeclaration() |
+  LOOKAHEAD(2)
+  ConstantDeclaration()
+| 
+  UpdatableFieldDeclaration() 
+}
+
+void ConstantDeclaration() :
+{}
+{
+  "public" "static" "final" Type() Identifier() "=" Expression() ";"
+}
+
+void UpdatableFieldDeclaration() :
+{}
+{
+  "public" Type() Identifier() ";"
+}
+
+void MethodDeclaration() :  
+{}
+{
+  "public" ReturnType() Identifier() 
+  "(" ( FormalParameterList() )? ")" Block()
+}
+
+void FormalParameterList() :
+{}
+{
+  FormalParameter() ( FormalParameterRest() )*
+}
+
+void FormalParameter() :
+{}
+{
+  FinalFormalParameter()
+|
+  UpdatableFormalParameter()
+}
+
+void FinalFormalParameter() :
+{}
+{
+  "final" Type() Identifier()
+}
+
+void UpdatableFormalParameter() :
+{}
+{
+  Type() Identifier()
+}
+
+void FormalParameterRest() :
+{}
+{
+  "," FormalParameter()
+}
+
+void ReturnType() :
+{}
+{
+  VoidType()
+| 
+  Type()
+}
+
+void VoidType() :
+{}
+{
+  "void"
+}
+
+void Type() :
+{}
+{
+  LOOKAHEAD( UpdatableArrayType() )
+  UpdatableArrayType()
+|
+  NonArrayType() 
+}
+
+void UpdatableArrayType() :
+{}
+{
+  NonArrayType() "[" ":" RankEquation() "]"
+}
+
+void RankEquation() :
+{}
+{
+  "rank" "==" IntegerLiteral()
+}
+
+void NonArrayType() :
+{}
+{
+  BooleanType()
+|
+  IntegerType()
+| 
+  DoubleType()
+|
+  StringType()
+| 
+  PlaceType()
+| 
+  DistType()
+|
+  RegionType() 
+|
+  PointType() 
+|
+  ClassNameType()     
+}
+
+void BooleanType() :
+{}
+{
+  "boolean"
+}
+
+void IntegerType() :
+{}
+{
+  "int"
+}
+
+void DoubleType() :
+{}
+{
+  "double"
+}
+
+void StringType() :
+{}
+{
+  "String"
+}
+
+void PlaceType() :
+{}
+{
+  "place"
+}
+
+void DistType() :
+{}
+{
+  "dist" "(" ":" RankEquation() ")"
+}
+
+void RegionType() :
+{}
+{
+  "region" "(" ":" RankEquation() ")"
+}
+
+void PointType() :
+{}
+{
+  "point" "(" ":" RankEquation() ")"
+}
+
+void ClassNameType() :
+{}
+{
+  Identifier()
+}
+
+void Identifier() :
+{}
+{
+  <IDENTIFIER> 
+}
+
+
+/*
+ * Statement syntax follows.
+ */
+
+void Statement() :
+{}
+{
+  LOOKAHEAD( Assignment() )
+  Assignment()
+|
+  AsyncStatement()
+|
+  Block()
+|
+  FinishStatement()
+|
+  IfStatement()
+|
+  LoopStatement()
+|
+  PostfixStatement()
+|
+  PrintlnStatement()
+|
+  ReturnStatement()
+|
+  ThrowStatement()
+|
+  WhileStatement()
+}
+
+void Assignment() :
+{}
+{
+  Expression() "=" Expression() ";"
+}
+
+void AsyncStatement() :
+{}
+{
+  "async" "(" Expression() ")" Block()
+}
+
+void Block() :
+{}
+{
+  "{" ( BlockStatement() )* "}"
+}
+
+void BlockStatement() :
+{}
+{
+  FinalVariableDeclaration() 
+|
+  LOOKAHEAD ( Type() Identifier() "=" )
+  UpdatableVariableDeclaration() 
+|
+  Statement()
+}
+
+void FinalVariableDeclaration() :
+{}
+{
+  "final" Type() Identifier() "=" Expression() ";" 
+}
+
+void UpdatableVariableDeclaration() :
+{}
+{
+  Type() Identifier() "=" Expression() ";" 
+}
+
+void FinishStatement() :
+{}
+{
+  "finish" Statement()
+}
+
+void IfStatement() :
+/*
+ * The disambiguating algorithm of JavaCC automatically binds dangling
+ * else's to the innermost if statement.  The LOOKAHEAD specification
+ * is to tell JavaCC that we know what we are doing.
+ */
+{}
+{
+  "if" "(" Expression() ")" Statement() 
+  [ LOOKAHEAD(1) ElseClause() ]
+}
+
+void ElseClause() :
+{}
+{
+  "else" Statement()
+}
+
+void LoopStatement() :
+{}
+{
+  "for" "(" PointType() ExplodedSpecification() ":" Expression() ")" 
+  Statement()
+}
+
+void ExplodedSpecification() :
+{}
+{
+  IdentifierList()
+}
+
+void PointName() :
+{}
+{
+  Identifier() 
+}
+
+void IdentifierList() :
+{}
+{
+  "[" Identifier() ( IdentifierRest() )* "]"
+}
+
+void IdentifierRest() :
+{}
+{
+  "," Identifier()
+}
+
+void PostfixStatement() :
+{}
+{
+  Expression() ";"
+}
+
+void PrintlnStatement() :
+{}
+{
+  "System.out.println" "(" Expression() ")" ";"
+}
+
+void ReturnStatement() :
+{}
+{
+  "return" [ Expression() ] ";"
+}
+
+void ThrowStatement() :
+{}
+{
+  "throw" "new" "RuntimeException" "(" Expression() ")" ";"
+}
+
+void WhileStatement() :
+{}
+{
+  "while" "(" Expression() ")" Statement()
+}
+
+/*
+ * Expression syntax follows.
+ */
+
+void Expression() :
+{}
+{ 
+  LOOKAHEAD( PrimaryExpression() "|" )
+  InclusiveOrExpression()
+|
+  LOOKAHEAD( PrimaryExpression() "==") 
+  EqualsExpression()
+|
+  LOOKAHEAD( PrimaryExpression() "!=") 
+  NotEqualsExpression()
+|
+  LOOKAHEAD( PrimaryExpression() ">") 
+  GreaterThanExpression()
+|
+  LOOKAHEAD( PrimaryExpression() "+") 
+  PlusExpression()
+|
+  LOOKAHEAD( PrimaryExpression() "-") 
+  MinusExpression()
+|
+  LOOKAHEAD( PrimaryExpression() "*") 
+  TimesExpression()
+|
+  LOOKAHEAD( PrimaryExpression() "/") 
+  DivideExpression()
+|
+  LOOKAHEAD(3)
+  SinExpression()
+|
+  LOOKAHEAD(3)
+  CosExpression() 
+|
+  LOOKAHEAD(3)
+  PowExpression() 
+|
+  LOOKAHEAD(3)
+  AbsExpression() 
+|
+  LOOKAHEAD( PrimaryExpression() "->" )
+  MapExpression()
+|
+  LOOKAHEAD( RegionConstant() )
+  RegionConstant()
+|
+  LOOKAHEAD( UnaryMinusExpression() )
+  UnaryMinusExpression()
+|
+  LOOKAHEAD( CoercionToIntExpression() )
+  CoercionToIntExpression()
+|
+  LOOKAHEAD( CoercionToDoubleExpression() )
+  CoercionToDoubleExpression()
+|
+  LOOKAHEAD( TypeAnnotatedExpression() )
+  TypeAnnotatedExpression()
+|
+  FactoryBlock()
+|
+  LOOKAHEAD( ArrayAccess() )
+  ArrayAccess()
+|  
+  LOOKAHEAD( DotDistribution() )
+  DotDistribution()
+|
+  LOOKAHEAD( DotIsFirst() )
+  DotIsFirst()
+|
+  LOOKAHEAD( DotMethodCall() )
+  DotMethodCall()
+|
+  LOOKAHEAD( DotIdentifier() )
+  DotIdentifier()
+|
+  PrimaryExpression()
+}
+
+void InclusiveOrExpression() :
+{}
+{
+  PrimaryExpression() "|" Expression()
+}
+
+void EqualsExpression() :
+{}
+{
+  PrimaryExpression() "==" Expression()
+}
+
+void NotEqualsExpression() :
+{}
+{
+  PrimaryExpression() "!=" Expression()
+}
+
+void GreaterThanExpression() :
+{}
+{
+  PrimaryExpression() ">" Expression()
+}
+
+void PlusExpression() :
+{}
+{
+  PrimaryExpression() "+" Expression()
+}
+
+void MinusExpression() :
+{}
+{
+  PrimaryExpression() "-" Expression()
+}
+
+void TimesExpression() :
+{}
+{
+  PrimaryExpression() "*" Expression()
+}
+
+void DivideExpression() :
+{}
+{
+  PrimaryExpression() "/" Expression()
+}
+
+void SinExpression() :
+{}
+{
+  "Math" "." "sin" "(" Expression() ")"
+}
+
+void CosExpression() :
+{}
+{
+  "Math" "." "cos" "(" Expression() ")"
+}
+
+void PowExpression() :
+{}
+{
+  "Math" "." "pow" "(" Expression() "," Expression() ")"
+}
+
+void AbsExpression() :
+{}
+{
+  "Math" "." "abs" "(" Expression() ")"
+}
+
+void MapExpression() :
+{}
+{
+  PrimaryExpression() "->" PrimaryExpression()
+}
+
+void RegionConstant() :
+{}
+{
+  "[" ColonExpression() ( ColonRest() )? "]"
+}
+
+void ColonRest() :
+{}
+{
+  "," ColonExpression()
+}
+
+void ColonExpression() :
+{}
+{
+  LOOKAHEAD( Expression() ":" )
+  ColonPair()
+|
+  Expression()
+}
+
+void ColonPair() :
+{}
+{
+  Expression() ":" Expression()
+}
+
+void UnaryMinusExpression() :
+{}
+{
+  "-" PrimaryExpression()
+}
+
+void CoercionToIntExpression() :
+{}
+{
+  "(" "int" ")" Expression()
+}
+
+void CoercionToDoubleExpression() :
+{}
+{
+  "(" "double" ")" Expression()
+}
+
+void TypeAnnotatedExpression() :
+{}
+{
+  "(" TypeAnnotation() ")" Expression()
+}
+
+void TypeAnnotation() :
+{}
+{
+      LOOKAHEAD( UpdatableArrayType() ) UpdatableArrayType() 
+|
+      LOOKAHEAD( DistType() )
+      DistType()
+}
+
+void PrimaryExpression() :
+{}
+{
+  Literal()
+|
+  This()
+|
+  AllocationExpression()
+|
+  Identifier()
+}
+
+void This() :
+{}
+{
+  "this"
+}
+
+void FactoryBlock() :
+{}
+{
+  "dist.factory.block" "(" Expression() ")"
+}
+
+void ArrayAccess() :
+{}
+{
+  PrimaryExpression() "[" ExpressionList() "]"
+}
+
+void DotMethodCall() :
+{}
+{
+  PrimaryExpression() "." Identifier() "(" ( ExpressionList() )? ")"
+}
+
+void DotDistribution() :
+{}
+{
+  PrimaryExpression() "." "distribution"
+}
+
+void DotIsFirst() :
+{}
+{
+  PrimaryExpression() "." "isFirst" "(" ")"
+}
+
+void DotIdentifier() :
+{}
+{
+  PrimaryExpression() "." Identifier()
+}
+
+void AllocationExpression() :
+{}
+{
+  LOOKAHEAD(3)
+  NewObject()
+|
+  LOOKAHEAD( "new" NonArrayType() "["  )
+  NewUpdatableArray()
+}
+
+void NewObject() :
+{}
+{
+ "new" Identifier() "(" [ ExpressionList() ] ")"
+}
+
+void NewUpdatableArray() :
+{}
+{
+ "new" NonArrayType() "[" Identifier() "]" 
+  [ LOOKAHEAD( ArrayInitializer() ) ArrayInitializer() ]
+}
+
+void Literal() :
+{}
+{
+  IntegerLiteral()
+|
+  FloatingPointLiteral()
+|
+  StringLiteral()
+|
+  HereLiteral()
+|
+  DistUnique()
+}
+
+void IntegerLiteral() :
+{}
+{
+  <INTEGER_LITERAL>
+}
+
+void FloatingPointLiteral() :
+{}
+{
+  <FLOATING_POINT_LITERAL>
+}
+
+void StringLiteral() :
+{}
+{
+  <STRING_LITERAL>
+}
+
+void HereLiteral() :
+{}
+{
+  "here"
+}
+
+void DistUnique() :
+{}
+{
+  "dist.UNIQUE"
+}
+
+void ExpressionList() :
+{}
+{
+  Expression() ( ArgumentRest() )*
+}
+
+void ArgumentRest() :
+{}
+{
+  "," Expression()
+}
+
+void ArrayInitializer() :
+{}
+{
+  "(" PointType() ExplodedSpecification() ")" Block()
+}
+
