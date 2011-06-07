@@ -36,7 +36,6 @@ public class DepthFirstVisitor implements Visitor {
    }
 
    public void visit(NodeToken n) { 
-       System.out.print(n);
    }
 
    //

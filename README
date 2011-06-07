@@ -1,0 +1,72 @@
+MAY HAPPEN IN PARALLEL ANALYSIS
+-------------------------------
+
+Program Based on the paper 
+1. http://www.cs.ucla.edu/~palsberg/paper/ppopp10.pdf
+2. http://www.cs.ucla.edu/~palsberg/draft/lpm10.pdf
+
+Requirements
+
+javacc version 5.0 http://javacc.java.net/
+jtb version 1.2.2 http://www.cs.ucla.edu/~palsberg/jtb/
+javac version 1.6.*
+
+
+Build:
+	make
+
+Run:
+	java MayHappyMain ClassName.FuncName < input.x10
+
+Where input.x10 is a x10 1.5 source file. Where ClassName.FuncName is
+the method within the input source file which has to be analyzed for
+MHP.
+
+Output:
+
+For each line of ClassName.FuncName the MHP set will be shown.
+
+For example, for the function:
+
+ void foo() {
+     int x = 0;
+     async x++;
+     async x--;
+}
+
+The result should be :
+
+1   void foo() {
+2        int x = 0; // M = {}
+3	 async x++; // M = {}
+4	 async x--; // M = {(line 3, async x++)}
+5 }
+
+Notes:
+
+1. The jtb example to invoke the visitor on the top level javacc
+parser class goes something like:
+
+     try {
+         Node root = parser.CompilationUnit();
+         System.err.println("Java program parsed successfully.");
+         root.accept(new DepthFirstVisitor());
+      }
+
+With newer version of javacc this is changed to:
+
+     try {
+         Node root = parser.File();
+         System.err.println("Java program parsed successfully.");
+         root.accept(new DepthFirstVisitor());
+      }
+
+Design
+
+Each node has the sets, M, O and L. The meaning of s : M, O, L is that
+s has MHP information M , that while s is executing statements with
+labels in L will be executed, and when s terminates, statements with
+labels in O may still be executing. Paper 2, illustrates the rules in
+deriving these values (Section 5 Type Systems).
+
+
