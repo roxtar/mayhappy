@@ -10,18 +10,21 @@ CLASSPATH=/usr/share/java/junit4.jar:.
 SET_TEST_CLASS=StringSetTest.class
 SET_TEST=StringSetTest
 
-all: $(MAIN_CLASS)
+all: $(MAIN_CLASS) test
+
+test: $(SET_TEST_CLASS)
+	junit $(SET_TEST)
+
 
 $(MAIN_CLASS): $(MAIN_SRC) $(SYNTAX_SRC) $(VISITOR_SRC) $(SET_SRC)
-	javac $<
+
+$(SET_TEST_CLASS): $(SET_SRC)
 
 $(MAIN_SRC): $(X10PARSER_SRC)
 
 $(X10PARSER_SRC): jtb.out.jj
 	javacc $<
 
-test: $(SET_TEST_CLASS)
-	junit $(SET_TEST)
 
 %.class : %.java
 	javac -classpath $(CLASSPATH) $<

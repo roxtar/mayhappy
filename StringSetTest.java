@@ -42,4 +42,36 @@ public class StringSetTest extends TestCase{
 	assertEquals(s3.size(), 1);
 	assertEquals(s3.contains("lbl2"), true);
     }
+
+    public void testNegIntersect() {
+	StringSet s1 = new StringSet();
+	StringSet s2 = new StringSet();
+	s1.add("lbl1");
+	s1.add("2");
+	StringSet s3 = s1.intersect(s2);
+	assertEquals(s3.size(), 0);
+
+	s2 = null;
+	s3 = s1.intersect(s2);
+	assertEquals(s3.size(), 0);
+    }
+
+    public void testCrossProd (){
+	StringSet s1 = new StringSet();
+	StringSet s2 = new StringSet();
+	
+
+	s1.add("1");
+	s1.add("2");
+	s1.add("3");
+	
+	s2.add("a");
+	s2.add("b");
+	s2.add("c");
+
+	StringPairSet result = s1.cross(s2);
+	assertEquals(result.contains(new StringPair("1", "a")), true);
+	assertEquals(result.size(), 9);
+    }
+	    
 }
