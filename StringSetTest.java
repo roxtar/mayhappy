@@ -73,5 +73,16 @@ public class StringSetTest extends TestCase{
 	assertEquals(result.contains(new StringPair("1", "a")), true);
 	assertEquals(result.size(), 9);
     }
+
+    public void testCrossProdEmpty() {
+	StringSet s1 = new StringSet(); 
+	StringSet s2 = new StringSet();
+	s1.add("1");
+	s1.add("2");
+	s1.add("3");
+	
+	StringPairSet result = s1.cross(s2);
+	assertEquals(result.size(), 0);
+    }
 	    
 }

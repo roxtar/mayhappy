@@ -7,13 +7,13 @@ VISITOR_SRC=$(wildcard visitor/*.java)
 SET_SRC=$(wildcard set/*.java)
 CLASSPATH=/usr/share/java/junit4.jar:.
 
-SET_TEST_CLASS=StringSetTest.class
-SET_TEST=StringSetTest
+SET_TEST_CLASS=StringSetTest.class StringPairSetTest.class
+SET_TEST=StringSetTest StringPairSetTest
 
-all: $(MAIN_CLASS) test
+all: $(MAIN_CLASS)
 
 test: $(SET_TEST_CLASS)
-	junit $(SET_TEST)
+	for i in $(SET_TEST); do junit -text $$i; done
 
 
 $(MAIN_CLASS): $(MAIN_SRC) $(SYNTAX_SRC) $(VISITOR_SRC) $(SET_SRC)

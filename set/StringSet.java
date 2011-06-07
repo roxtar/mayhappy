@@ -29,7 +29,9 @@ public class StringSet extends java.util.HashSet<String>{
 	}
 	return result;
     }
-
+    // Cartesian product
+    // A x B = {(a, b) | a \in A and b \in B}
+    // A x \phi = \phi
     public StringPairSet cross(StringSet s) {
 	StringPairSet result = new StringPairSet();
 	if(s != null) {
