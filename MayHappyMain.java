@@ -7,7 +7,7 @@ public class MayHappyMain {
 	try {
 	    Node root = parser.File();
 	    System.err.println("Success: Parse");
-	    root.accept(new DepthFirstVisitor());
+	    root.accept(new MhpVisitor());
 	}
 	catch (ParseException e) {
 	    System.err.println("Error: Parse");
