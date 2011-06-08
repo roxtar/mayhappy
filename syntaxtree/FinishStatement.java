@@ -9,16 +9,18 @@ package syntaxtree;
  * f0 -> "finish"
  * f1 -> Statement()
  */
-public class FinishStatement implements Node {
+public class FinishStatement extends MhpStatement implements Node {
    public NodeToken f0;
    public Statement f1;
 
    public FinishStatement(NodeToken n0, Statement n1) {
+       super();
       f0 = n0;
       f1 = n1;
    }
 
    public FinishStatement(Statement n0) {
+       super();
       f0 = new NodeToken("finish");
       f1 = n0;
    }

@@ -20,6 +20,7 @@ public class AsyncStatement extends MhpStatement implements Node {
    public Block f4;
 
    public AsyncStatement(NodeToken n0, NodeToken n1, Expression n2, NodeToken n3, Block n4) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
@@ -28,6 +29,7 @@ public class AsyncStatement extends MhpStatement implements Node {
    }
 
    public AsyncStatement(Expression n0, Block n1) {
+       super();
       f0 = new NodeToken("async");
       f1 = new NodeToken("(");
       f2 = n0;

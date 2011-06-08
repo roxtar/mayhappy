@@ -29,6 +29,27 @@ public class StringSet extends java.util.HashSet<String>{
 	}
 	return result;
     }
+
+    public StringSet subtract(StringSet s) {
+	StringSet result = new StringSet();
+	java.util.Iterator j = this.iterator();
+	while(j.hasNext()) {
+	    String str = j.next().toString();
+	    result.add(str);
+	}
+	    
+	if(s != null) {
+	    java.util.Iterator i = s.iterator();
+	    while(i.hasNext()) {
+	        String str = i.next().toString();
+		if(this.contains(str)) {
+		    result.remove(str);
+		}
+	    }
+	}
+	return result;
+    }
+
     // Cartesian product
     // A x B = {(a, b) | a \in A and b \in B}
     // A x \phi = \phi

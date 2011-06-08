@@ -16,6 +16,7 @@ public class MhpVisitor extends DepthFirstVisitor {
     public void visit(File n ) {
       n.f0.accept(this);
       n.f1.accept(this);
+      System.out.println("MHP (End)");
       System.out.println(this.M);
     }
 
@@ -35,8 +36,35 @@ public class MhpVisitor extends DepthFirstVisitor {
    public void visit(Statement n) {
       n.f0.accept(this);
       Object o = n.f0.choice;
-      copySets(n, o);	  
+      copySets(n, o);
+      printStatement(n);
    }
+
+    /**
+    * f0 -> "finish"
+    * f1 -> Statement()
+    */
+    public void visit(FinishStatement n) {
+	n.f0.accept(this);
+	n.f1.accept(this);
+	n.M = n.f1.M;
+	n.L = n.f1.L;
+	
+	// Clear the global MHP with all the statements
+	// which were executed in this finish block
+	this.M = this.M.subtract(n.L);
+
+	// clear the global O with all the statements
+	// which were added to it in this finish block
+	this.O = this.O.subtract(n.L);
+
+	// add the list of statements executed to the global one
+	this.L = this.L.union(n.f1.L);
+	n.M = this.M;
+	n.O = null;	    
+    }
+
+
 
 
    /**
@@ -146,8 +174,8 @@ public class MhpVisitor extends DepthFirstVisitor {
     }
 
     private void updateAsyncProduction(MhpStatement statement) {
-	this.O = statement.L;
-	this.L = statement.L;	    
+	this.O = this.O.union(statement.L);
+	this.L = this.L.union(statement.L);	    
     }
     
     private void copySets(MhpStatement n, Object o) {
@@ -162,7 +190,7 @@ public class MhpVisitor extends DepthFirstVisitor {
     private void unionSets(MhpStatement n, Object o) {
 	if(o instanceof MhpStatement) {
 	    MhpStatement statement = (MhpStatement) o;
-	    
+	    n.M = n.M.union(statement.M);
 	    n.L = n.L.union(statement.L);
 	    n.O = n.O.union(statement.O);
 	}
@@ -170,6 +198,14 @@ public class MhpVisitor extends DepthFirstVisitor {
 
     private void print(String s) {
 	System.out.println(s);
+    }
+
+    private void printStatement(Statement s) {
+	TextVisitor t = new TextVisitor();
+	t.visit(s);
+	System.out.println(t.getText());
+	System.out.println("MHP: ");
+	System.out.println(s.M);
     }
 
 }

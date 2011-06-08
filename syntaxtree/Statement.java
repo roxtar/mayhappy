@@ -22,6 +22,7 @@ public class Statement extends MhpStatement implements Node {
    public NodeChoice f0;
 
    public Statement(NodeChoice n0) {
+       super();
       f0 = n0;
    }
 
