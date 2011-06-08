@@ -15,7 +15,7 @@ package syntaxtree;
  * f6 -> ")"
  * f7 -> Statement()
  */
-public class LoopStatement implements Node {
+public class LoopStatement extends MhpStatement implements Node {
    public NodeToken f0;
    public NodeToken f1;
    public PointType f2;
@@ -26,6 +26,8 @@ public class LoopStatement implements Node {
    public Statement f7;
 
    public LoopStatement(NodeToken n0, NodeToken n1, PointType n2, ExplodedSpecification n3, NodeToken n4, Expression n5, NodeToken n6, Statement n7) {
+
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
@@ -37,6 +39,7 @@ public class LoopStatement implements Node {
    }
 
    public LoopStatement(PointType n0, ExplodedSpecification n1, Expression n2, Statement n3) {
+       super();
       f0 = new NodeToken("for");
       f1 = new NodeToken("(");
       f2 = n0;

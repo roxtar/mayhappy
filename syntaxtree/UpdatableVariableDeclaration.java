@@ -12,7 +12,7 @@ package syntaxtree;
  * f3 -> Expression()
  * f4 -> ";"
  */
-public class UpdatableVariableDeclaration implements Node {
+public class UpdatableVariableDeclaration extends MhpStatement implements Node {
    public Type f0;
    public Identifier f1;
    public NodeToken f2;
@@ -20,6 +20,7 @@ public class UpdatableVariableDeclaration implements Node {
    public NodeToken f4;
 
    public UpdatableVariableDeclaration(Type n0, Identifier n1, NodeToken n2, Expression n3, NodeToken n4) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
@@ -28,6 +29,7 @@ public class UpdatableVariableDeclaration implements Node {
    }
 
    public UpdatableVariableDeclaration(Type n0, Identifier n1, Expression n2) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = new NodeToken("=");

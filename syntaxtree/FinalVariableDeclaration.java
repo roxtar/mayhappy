@@ -13,7 +13,7 @@ package syntaxtree;
  * f4 -> Expression()
  * f5 -> ";"
  */
-public class FinalVariableDeclaration implements Node {
+public class FinalVariableDeclaration extends MhpStatement implements Node {
    public NodeToken f0;
    public Type f1;
    public Identifier f2;
@@ -22,6 +22,7 @@ public class FinalVariableDeclaration implements Node {
    public NodeToken f5;
 
    public FinalVariableDeclaration(NodeToken n0, Type n1, Identifier n2, NodeToken n3, Expression n4, NodeToken n5) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
@@ -31,6 +32,7 @@ public class FinalVariableDeclaration implements Node {
    }
 
    public FinalVariableDeclaration(Type n0, Identifier n1, Expression n2) {
+       super();
       f0 = new NodeToken("final");
       f1 = n0;
       f2 = n1;

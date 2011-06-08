@@ -97,6 +97,45 @@ public class MhpVisitor extends DepthFirstVisitor {
 	
     }
 
+    /**
+    * f0 -> "for"
+    * f1 -> "("
+    * f2 -> PointType()
+    * f3 -> ExplodedSpecification()
+    * f4 -> ":"
+    * f5 -> Expression()
+    * f6 -> ")"
+    * f7 -> Statement()
+    */
+
+    public void visit(LoopStatement n) {
+
+	while(true) {
+	    n.f0.accept(this);
+	    n.f1.accept(this);
+	    n.f2.accept(this);
+	    n.f3.accept(this);
+	    n.f4.accept(this);
+	    n.f5.accept(this);
+	    n.f6.accept(this);
+	    n.f7.accept(this);
+	    
+	    Statement s1 = n.f7;
+	    // Apply the rule loop s1
+	    StringPairSet mdash = this.M.union(s1.O.symcross(s1.L));
+	    if(mdash.equals(this.M))
+		break;
+	}
+	n.O = n.f7.O;
+	n.L = n.f7.L;
+	n.M = n.f7.M;
+	    
+	this.O = this.O.union(n.f7.O);
+	this.L = this.L.union(n.f7.L);
+
+	
+    }
+
 
    /**
     * f0 -> Expression()
@@ -153,6 +192,49 @@ public class MhpVisitor extends DepthFirstVisitor {
 	n.f3.accept(t);
 	n.L.add(n.getLabel() + t.getText());
 	updateBlockProduction(n);
+    }
+
+
+    /**
+    * f0 -> "final"
+    * f1 -> Type()
+    * f2 -> Identifier()
+    * f3 -> "="
+    * f4 -> Expression()
+    * f5 -> ";"
+    */
+
+    public void visit(FinalVariableDeclaration n) {
+	TextVisitor t = new TextVisitor();
+	n.f0.accept(t);
+	n.f1.accept(t);
+	n.f2.accept(t);
+	n.f3.accept(t);
+	n.f4.accept(t);
+	n.f5.accept(t);
+	n.L.add(n.getLabel() + t.getText());
+	updateBlockProduction(n);
+	printFinalDeclaration(n);
+    }
+
+       /**
+    * f0 -> Type()
+    * f1 -> Identifier()
+    * f2 -> "="
+    * f3 -> Expression()
+    * f4 -> ";"
+    */
+
+    public void visit(UpdatableVariableDeclaration n) {
+	TextVisitor t = new TextVisitor();
+	n.f0.accept(t);
+	n.f1.accept(t);
+	n.f2.accept(t);
+	n.f3.accept(t);
+	n.f4.accept(t);
+	n.L.add(n.getLabel() + t.getText());
+	updateBlockProduction(n);
+	printUpdatableDeclaration(n);
     }
 
        /**
@@ -255,16 +337,32 @@ public class MhpVisitor extends DepthFirstVisitor {
 	System.out.println(s);
     }
 
+    private void printFinalDeclaration(FinalVariableDeclaration s) {
+	TextVisitor t = new TextVisitor();
+	t.visit(s);
+	printMOL(s, t.getText());
+    }
+
+    private void printUpdatableDeclaration(UpdatableVariableDeclaration s) {
+	TextVisitor t = new TextVisitor();
+	t.visit(s);
+	printMOL(s, t.getText());
+    }
     private void printStatement(Statement s) {
 	TextVisitor t = new TextVisitor();
 	t.visit(s);
-	System.out.println(t.getText());
+	printMOL(s, t.getText());
+    }
+
+    private void printMOL(MhpStatement s, String label) {
+	System.out.println(label);
 	System.out.println("MHP: ");
 	System.out.println(s.M);
 	System.out.println("O: ");
 	System.out.println(s.O);
 	System.out.println("L: ");
 	System.out.println(s.L);
+
     }
 
 

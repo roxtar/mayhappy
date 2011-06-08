@@ -17,7 +17,6 @@ public class MhpStatement {
     }
 
     public String getLabel() {
-	System.out.println("Get label");
 	if(_label.equals("")) {
 	    _label = "L"+_label_count+++":";
 	}
