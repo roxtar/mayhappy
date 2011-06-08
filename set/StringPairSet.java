@@ -53,13 +53,27 @@ public class StringPairSet extends java.util.HashSet<StringPair> {
 	java.util.Iterator j = this.iterator();
 	while(j.hasNext()) {
 	    StringPair str = (StringPair)j.next();
-	    if(!s.contains(str.v1) && !s.contains(str.v2)) {
-		System.out.println("adding " + str.v1);
-		System.out.println("adding " + str.v2);
+	    if(!s.contains(str.v1) && !s.contains(str.v2)) {		
 		result.add(str);
 	    }
 	}
 	return result;
+    }
+
+    public boolean equals(StringPairSet s) {
+	if(this.size() != s.size()) {
+	    return false;
+	}
+
+	java.util.Iterator j = this.iterator();
+
+	while(j.hasNext()) {
+	    StringPair str = (StringPair)j.next();
+	    if(!s.contains(str))
+		return false;
+	}
+
+	return true;
     }
 
     public String toString() {

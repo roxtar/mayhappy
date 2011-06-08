@@ -12,7 +12,7 @@ package syntaxtree;
  * f3 -> ")"
  * f4 -> Statement()
  */
-public class WhileStatement implements Node {
+public class WhileStatement extends MhpStatement implements Node {
    public NodeToken f0;
    public NodeToken f1;
    public Expression f2;
@@ -20,6 +20,7 @@ public class WhileStatement implements Node {
    public Statement f4;
 
    public WhileStatement(NodeToken n0, NodeToken n1, Expression n2, NodeToken n3, Statement n4) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
@@ -28,6 +29,7 @@ public class WhileStatement implements Node {
    }
 
    public WhileStatement(Expression n0, Statement n1) {
+       super();
       f0 = new NodeToken("while");
       f1 = new NodeToken("(");
       f2 = n0;

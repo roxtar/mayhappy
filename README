@@ -70,3 +70,17 @@ labels in O may still be executing. Paper 2, illustrates the rules in
 deriving these values (Section 5 Type Systems).
 
 
+The program maintains the (M, O, L) sets per statement and also at a
+global level. The global (M_g, O_g, L_g) contain values which are used
+to compute the local (M, O, L) sets. 
+
+The class MhpVisitor traverses through the syntax tree of the program
+and sets the (M, O, L) values of each statement. Initially (M_g, O_g,
+L_g) are all ({}, {}, {}) empty sets. When the MhpVisitor traverses
+the syntax tree, these sets are populated according to the rules.
+
+Rule:
+
+	async s1 -- M = M_g, O = O_g U O_s1, L = L_s1
+	finish s1 -- M = M_g, O = O_g - L_s1, L = L_s1
+	loop s1 -- M = M_g U symcross(O_s1, L_s1), O=O_g, L=L_g

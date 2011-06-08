@@ -3,9 +3,9 @@ import syntaxtree.*;
 import java.util.*;
 import set.*;
 public class MhpVisitor extends DepthFirstVisitor {
-    StringPairSet M;
-    StringSet L;
-    StringSet O;
+    public StringPairSet M;
+    public StringSet L;
+    public StringSet O;
     
     public MhpVisitor(){
 	M = new StringPairSet();
@@ -61,10 +61,40 @@ public class MhpVisitor extends DepthFirstVisitor {
 	// add the list of statements executed to the global one
 	this.L = this.L.union(n.f1.L);
 	n.M = this.M;
-	n.O = null;	    
+	n.O.clear();
     }
 
 
+    /**
+    * f0 -> "while"
+    * f1 -> "("
+    * f2 -> Expression()
+    * f3 -> ")"
+    * f4 -> Statement()
+    */    
+
+    public void visit(WhileStatement n) {
+	while(true) {
+	    n.f0.accept(this);
+	    n.f1.accept(this);
+	    n.f2.accept(this);
+	    n.f3.accept(this);
+	    n.f4.accept(this);
+	    
+	    Statement s1 = n.f4;
+	    // Apply the rule loop s1
+	    StringPairSet mdash = this.M.union(s1.O.symcross(s1.L));
+	    if(mdash.equals(this.M))
+		break;
+	}
+	n.O = n.f4.O;
+	n.L = n.f4.L;
+	n.M = n.f4.M;
+	    
+	this.O = this.O.union(n.f4.O);
+	this.L = this.L.union(n.f4.L);
+	
+    }
 
 
    /**
@@ -116,6 +146,7 @@ public class MhpVisitor extends DepthFirstVisitor {
 	n.f3.accept(this);
 	n.f4.accept(this);
 	copySets(n, n.f4);
+	n.O = n.O.union(n.L);
 	updateAsyncProduction(n);
     }
 
@@ -206,6 +237,10 @@ public class MhpVisitor extends DepthFirstVisitor {
 	System.out.println(t.getText());
 	System.out.println("MHP: ");
 	System.out.println(s.M);
+	System.out.println("O: ");
+	System.out.println(s.O);
+	System.out.println("L: ");
+	System.out.println(s.L);
     }
 
 }

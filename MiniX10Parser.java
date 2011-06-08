@@ -4039,7 +4039,7 @@ public class MiniX10Parser implements MiniX10ParserConstants {
   /** Constructor with InputStream and supplied encoding */
   public MiniX10Parser(java.io.InputStream stream, String encoding) {
     if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser.  ");
+	      System.out.println("ERROR: Second call to constructor of static parser.  ");
       System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
       System.out.println("       during parser generation.");
       throw new Error();
