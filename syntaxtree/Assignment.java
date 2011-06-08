@@ -11,32 +11,25 @@ import set.*;
  * f2 -> Expression()
  * f3 -> ";"
  */
-public class Assignment implements Node {
+public class Assignment extends MhpStatement implements Node {
    public Expression f0;
    public NodeToken f1;
    public Expression f2;
    public NodeToken f3;
-    public StringSet L;
-    public StringSet O;
-    public StringPairSet M;
    public Assignment(Expression n0, NodeToken n1, Expression n2, NodeToken n3) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
       f3 = n3;
-      L = new StringSet();
-      O = new StringSet();
-      M = new StringPairSet();
    }
 
    public Assignment(Expression n0, Expression n1) {
+       super();
       f0 = n0;
       f1 = new NodeToken("=");
       f2 = n1;
       f3 = new NodeToken(";");
-      L = new StringSet();
-      O = new StringSet();
-      M = new StringPairSet();
    }
 
    public void accept(visitor.Visitor v) {

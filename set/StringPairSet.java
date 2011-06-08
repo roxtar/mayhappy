@@ -28,4 +28,16 @@ public class StringPairSet extends java.util.HashSet<StringPair> {
 	return result;
     }
 
+    public String toString() {
+	java.util.Iterator i = this.iterator();
+	StringBuilder str = new StringBuilder();
+	str.append("{\n");
+	while(i.hasNext()) {
+	    StringPair strpair = (StringPair)i.next();
+	    str.append("(" + strpair.v1 + ", " + strpair.v2 + ")\n");
+	}
+	str.append("}\n");
+	return str.toString();
+    }
+
 }

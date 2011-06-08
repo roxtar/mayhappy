@@ -48,6 +48,27 @@ public class StringSet extends java.util.HashSet<String>{
 	}
 	return result;		    
     }
+
+    public StringPairSet symcross(StringSet s) {
+	StringPairSet result = new StringPairSet();
+	if(s != null && s.size() > 0 && this.size() > 0) {
+	    result = this.cross(s);
+	    result = result.union(s.cross(this));		
+	}
+	return result;
+    }
+
+    public String toString() {
+	StringBuilder str = new StringBuilder();
+	java.util.Iterator i = this.iterator();
+	str.append("{\n");
+	while(i.hasNext()) {
+	    String s = (String)i.next();
+	    str.append("("+s+")\n");
+	}
+	str.append("}\n");
+	return str.toString();
+    }
 	    
 }
 

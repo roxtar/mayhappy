@@ -12,7 +12,7 @@ package syntaxtree;
  * f3 -> ")"
  * f4 -> Block()
  */
-public class AsyncStatement implements Node {
+public class AsyncStatement extends MhpStatement implements Node {
    public NodeToken f0;
    public NodeToken f1;
    public Expression f2;

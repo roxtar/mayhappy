@@ -10,10 +10,11 @@ package syntaxtree;
  *       | UpdatableVariableDeclaration()
  *       | Statement()
  */
-public class BlockStatement implements Node {
+public class BlockStatement extends MhpStatement implements Node {
    public NodeChoice f0;
 
    public BlockStatement(NodeChoice n0) {
+       super();
       f0 = n0;
    }
 

@@ -1,4 +1,3 @@
-package test;
 import junit.framework.TestCase;
 import set.*;
 public class StringSetTest extends TestCase{

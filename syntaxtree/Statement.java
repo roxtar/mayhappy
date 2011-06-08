@@ -18,7 +18,7 @@ package syntaxtree;
  *       | ThrowStatement()
  *       | WhileStatement()
  */
-public class Statement implements Node {
+public class Statement extends MhpStatement implements Node {
    public NodeChoice f0;
 
    public Statement(NodeChoice n0) {

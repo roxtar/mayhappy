@@ -6,10 +6,10 @@ public class TextVisitor extends DepthFirstVisitor {
     public StringBuilder _text;
 
     public String getText() {
-	Text.toString().trim();
+     return  _text.toString().trim();
     }
     public TextVisitor() {
-	Text = new StringBuilder();
+	_text = new StringBuilder();
     }
 
     public void visit(NodeToken n) { 

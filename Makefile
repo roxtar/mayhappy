@@ -7,10 +7,10 @@ VISITOR_SRC=$(wildcard visitor/*.java)
 SET_SRC=$(wildcard set/*.java)
 CLASSPATH=/usr/share/java/junit4.jar:.
 
-TEST_SRC=$(wildcard test/*.java)
+TEST_SRC=$(wildcard *Test.java)
 TEST_CLASS=$(TEST_SRC:.java=.class)
-TEST_PATH=$(TEST_SRC:.java= )
-TEST_OUT=$(subst /,., $(TEST_PATH))
+TEST_OUT=$(TEST_SRC:.java= )
+
 
 all: $(MAIN_CLASS)
 
@@ -19,7 +19,7 @@ test: $(TEST_CLASS)
 
 $(MAIN_CLASS): $(MAIN_SRC) $(SYNTAX_SRC) $(VISITOR_SRC) $(SET_SRC)
 
-$(SET_TEST_CLASS): $(SET_SRC)
+$(TEST_CLASS): $(TEST_SRC) $(VISITOR_SRC) $(SYNTAX_SRC) $(SET_SRC)
 
 $(MAIN_SRC): $(X10PARSER_SRC)
 
@@ -34,7 +34,7 @@ jtb.out.jj : miniX10.jj
 	jtb $<
 
 clean: 
-	rm -rf *.class jtb.out.jj
+	rm -rf *.class 
 
 
 

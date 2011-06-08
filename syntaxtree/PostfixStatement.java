@@ -3,22 +3,24 @@
 //
 
 package syntaxtree;
-
+import set.*;
 /**
  * Grammar production:
  * f0 -> Expression()
  * f1 -> ";"
  */
-public class PostfixStatement implements Node {
+public class PostfixStatement extends MhpStatement implements Node{
    public Expression f0;
    public NodeToken f1;
 
    public PostfixStatement(Expression n0, NodeToken n1) {
+      super();
       f0 = n0;
       f1 = n1;
    }
 
    public PostfixStatement(Expression n0) {
+      super();
       f0 = n0;
       f1 = new NodeToken(";");
    }
