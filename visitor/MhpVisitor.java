@@ -6,6 +6,7 @@ public class MhpVisitor extends DepthFirstVisitor {
     public StringPairSet M;
     public StringSet L;
     public StringSet O;
+
     
     public MhpVisitor(){
 	M = new StringPairSet();
@@ -109,10 +110,33 @@ public class MhpVisitor extends DepthFirstVisitor {
 	t.visit(expr);
 	
 	// Add the expression to the L field of L
-	statement.L.add(t.getText());
+	statement.L.add(statement.getLabel() + t.getText());
 
 	updateBlockProduction(statement);
     }
+
+    /**
+    * f0 -> "System.out.println"
+    * f1 -> "("
+    * f2 -> Expression()
+    * f3 -> ")"
+    * f4 -> ";"
+    */
+    public void visit(PrintlnStatement n) {
+	n.f0.accept(this);
+	n.f1.accept(this);
+	n.f2.accept(this);
+	n.f3.accept(this);
+	n.f4.accept(this);
+	
+	TextVisitor t = new TextVisitor();
+	t.visit(n);
+	n.L.add(n.getLabel() + t.getText());
+	updateBlockProduction(n);
+    }
+
+
+
 
     /**
     * f0 -> Expression()
@@ -127,7 +151,7 @@ public class MhpVisitor extends DepthFirstVisitor {
 	n.f1.accept(t);
 	n.f2.accept(t);
 	n.f3.accept(t);
-	n.L.add(t.getText());
+	n.L.add(n.getLabel() + t.getText());
 	updateBlockProduction(n);
     }
 
@@ -242,5 +266,6 @@ public class MhpVisitor extends DepthFirstVisitor {
 	System.out.println("L: ");
 	System.out.println(s.L);
     }
+
 
 }

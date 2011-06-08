@@ -12,7 +12,7 @@ package syntaxtree;
  * f3 -> ")"
  * f4 -> ";"
  */
-public class PrintlnStatement implements Node {
+public class PrintlnStatement extends MhpStatement implements Node {
    public NodeToken f0;
    public NodeToken f1;
    public Expression f2;
@@ -20,6 +20,7 @@ public class PrintlnStatement implements Node {
    public NodeToken f4;
 
    public PrintlnStatement(NodeToken n0, NodeToken n1, Expression n2, NodeToken n3, NodeToken n4) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
@@ -28,6 +29,7 @@ public class PrintlnStatement implements Node {
    }
 
    public PrintlnStatement(Expression n0) {
+       super();
       f0 = new NodeToken("System.out.println");
       f1 = new NodeToken("(");
       f2 = n0;
