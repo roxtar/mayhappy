@@ -106,7 +106,7 @@ public class MhpVisitor extends DepthFirstVisitor {
       if(n.f1.present()) {
 	  for(Enumeration e = n.f1.elements(); e.hasMoreElements(); ) {
 	      Object node = e.nextElement();
-	      copySets(n, node);
+	      unionSets(n, node);
 	  }
       }
    }
@@ -142,7 +142,6 @@ public class MhpVisitor extends DepthFirstVisitor {
 	StringSet ldash = this.L.union(statement.L);
 	      
 	this.L = ldash;
-	statement.L = ldash;
 
     }
 
@@ -157,6 +156,15 @@ public class MhpVisitor extends DepthFirstVisitor {
 	    n.M = statement.M;
 	    n.L = statement.L;
 	    n.O = statement.O;
+	}
+    }
+
+    private void unionSets(MhpStatement n, Object o) {
+	if(o instanceof MhpStatement) {
+	    MhpStatement statement = (MhpStatement) o;
+	    
+	    n.L = n.L.union(statement.L);
+	    n.O = n.O.union(statement.O);
 	}
     }
 
