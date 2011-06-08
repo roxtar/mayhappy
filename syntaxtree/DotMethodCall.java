@@ -13,7 +13,7 @@ package syntaxtree;
  * f4 -> ( ExpressionList() )?
  * f5 -> ")"
  */
-public class DotMethodCall implements Node {
+public class DotMethodCall extends MhpStatement implements Node {
    public PrimaryExpression f0;
    public NodeToken f1;
    public Identifier f2;
@@ -22,6 +22,7 @@ public class DotMethodCall implements Node {
    public NodeToken f5;
 
    public DotMethodCall(PrimaryExpression n0, NodeToken n1, Identifier n2, NodeToken n3, NodeOptional n4, NodeToken n5) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
@@ -31,6 +32,7 @@ public class DotMethodCall implements Node {
    }
 
    public DotMethodCall(PrimaryExpression n0, Identifier n1, NodeOptional n2) {
+       super();
       f0 = n0;
       f1 = new NodeToken(".");
       f2 = n1;

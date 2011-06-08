@@ -4,7 +4,7 @@ import java.util.*;
 
 public class MethodFindVisitor extends ObjectDepthFirst {
     MethodDeclaration _method;
-    public MethodDeclaration Find(File n, String name) {
+    public MethodDeclaration find(File n, String name) {
 	_method = null;
 	n.f0.accept(this, name);
 	n.f1.accept(this, name);

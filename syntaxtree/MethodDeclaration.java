@@ -14,7 +14,7 @@ package syntaxtree;
  * f5 -> ")"
  * f6 -> Block()
  */
-public class MethodDeclaration implements Node {
+public class MethodDeclaration extends MhpStatement implements Node {
    public NodeToken f0;
    public ReturnType f1;
    public Identifier f2;
@@ -24,6 +24,7 @@ public class MethodDeclaration implements Node {
    public Block f6;
 
    public MethodDeclaration(NodeToken n0, ReturnType n1, Identifier n2, NodeToken n3, NodeOptional n4, NodeToken n5, Block n6) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
@@ -34,6 +35,7 @@ public class MethodDeclaration implements Node {
    }
 
    public MethodDeclaration(ReturnType n0, Identifier n1, NodeOptional n2, Block n3) {
+       super();
       f0 = new NodeToken("public");
       f1 = n0;
       f2 = n1;

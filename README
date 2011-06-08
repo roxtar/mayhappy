@@ -84,3 +84,9 @@ Rule:
 	async s1 -- M = M_g, O = O_g U O_s1, L = L_s1
 	finish s1 -- M = M_g, O = O_g - L_s1, L = L_s1
 	loop s1 -- M = M_g U symcross(O_s1, L_s1), O=O_g, L=L_g
+
+TODO:
+	IfStatement
+	ReturnStatement
+	ThrowStatement
+	DotMethodCall

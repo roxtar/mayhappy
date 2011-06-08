@@ -6,6 +6,7 @@ public class MhpVisitor extends DepthFirstVisitor {
     public StringPairSet M;
     public StringSet L;
     public StringSet O;
+    private File _file;
 
     
     public MhpVisitor(){
@@ -14,37 +15,107 @@ public class MhpVisitor extends DepthFirstVisitor {
 	O = new StringSet();
     }
 
+
+    /**
+    * f0 -> ( TopLevelDeclaration() )*
+    * f1 -> <EOF>
+    */
+
     public void visit(File n ) {
+	_file = n;
+	n.f0.accept(this);
+	n.f1.accept(this);
+	System.out.println("MHP (End)");
+	System.out.println(this.M);
+    }
+
+
+       /**
+    * f0 -> "public"
+    * f1 -> "class"
+    * f2 -> Identifier()
+    * f3 -> "{"
+    * f4 -> "public"
+    * f5 -> "static"
+    * f6 -> "void"
+    * f7 -> "main"
+    * f8 -> "("
+    * f9 -> "String"
+    * f10 -> "["
+    * f11 -> "]"
+    * f12 -> Identifier()
+    * f13 -> ")"
+    * f14 -> "{"
+    * f15 -> Statement()
+    * f16 -> "}"
+    * f17 -> "}"
+    */
+   public void visit(MainClass n) {
       n.f0.accept(this);
       n.f1.accept(this);
-      System.out.println("MHP (End)");
-      System.out.println(this.M);
+      n.f2.accept(this);
+      n.f3.accept(this);
+      n.f4.accept(this);
+      n.f5.accept(this);
+      n.f6.accept(this);
+      n.f7.accept(this);
+      n.f8.accept(this);
+      n.f9.accept(this);
+      n.f10.accept(this);
+      n.f11.accept(this);
+      n.f12.accept(this);
+      n.f13.accept(this);
+      n.f14.accept(this);
+      n.f15.accept(this);
+      n.f16.accept(this);
+      n.f17.accept(this);
+   }
+
+   /**
+    * f0 -> "class"
+    * f1 -> Identifier()
+    * f2 -> "{"
+    * f3 -> ( ClassMember() )*
+    * f4 -> "}"
+    */
+   public void visit(ClassDeclaration n) {
+       // we don't visit class declarations when reading the file
+       // we will visit functions of a particular class
+       // if they are called
+
+       //n.f0.accept(this);
+       //n.f1.accept(this);
+       //n.f2.accept(this);
+       //n.f3.accept(this);
+       //n.f4.accept(this);
+       return;
+   }
+
+
+    /**
+     * f0 -> Assignment()
+     *       | AsyncStatement()
+     *       | Block()
+     *       | FinishStatement()
+     *       | IfStatement()
+     *       | LoopStatement()
+     *       | PostfixStatement()
+     *       | PrintlnStatement()
+     *       | ReturnStatement()
+     *       | ThrowStatement()
+     *       | WhileStatement()
+     */
+    public void visit(Statement n) {
+	n.f0.accept(this);
+	Object o = n.f0.choice;
+	copySets(n, o);
+	printStatement(n);
     }
 
     /**
-    * f0 -> Assignment()
-    *       | AsyncStatement()
-    *       | Block()
-    *       | FinishStatement()
-    *       | IfStatement()
-    *       | LoopStatement()
-    *       | PostfixStatement()
-    *       | PrintlnStatement()
-    *       | ReturnStatement()
-    *       | ThrowStatement()
-    *       | WhileStatement()
-    */
-   public void visit(Statement n) {
-      n.f0.accept(this);
-      Object o = n.f0.choice;
-      copySets(n, o);
-      printStatement(n);
-   }
-
-    /**
-    * f0 -> "finish"
-    * f1 -> Statement()
-    */
+     * f0 -> "finish"
+     * f1 -> Statement()
+     */
     public void visit(FinishStatement n) {
 	n.f0.accept(this);
 	n.f1.accept(this);
@@ -67,12 +138,12 @@ public class MhpVisitor extends DepthFirstVisitor {
 
 
     /**
-    * f0 -> "while"
-    * f1 -> "("
-    * f2 -> Expression()
-    * f3 -> ")"
-    * f4 -> Statement()
-    */    
+     * f0 -> "while"
+     * f1 -> "("
+     * f2 -> Expression()
+     * f3 -> ")"
+     * f4 -> Statement()
+     */    
 
     public void visit(WhileStatement n) {
 	while(true) {
@@ -98,15 +169,15 @@ public class MhpVisitor extends DepthFirstVisitor {
     }
 
     /**
-    * f0 -> "for"
-    * f1 -> "("
-    * f2 -> PointType()
-    * f3 -> ExplodedSpecification()
-    * f4 -> ":"
-    * f5 -> Expression()
-    * f6 -> ")"
-    * f7 -> Statement()
-    */
+     * f0 -> "for"
+     * f1 -> "("
+     * f2 -> PointType()
+     * f3 -> ExplodedSpecification()
+     * f4 -> ":"
+     * f5 -> Expression()
+     * f6 -> ")"
+     * f7 -> Statement()
+     */
 
     public void visit(LoopStatement n) {
 
@@ -137,10 +208,10 @@ public class MhpVisitor extends DepthFirstVisitor {
     }
 
 
-   /**
-    * f0 -> Expression()
-    * f1 -> ";"
-    */
+    /**
+     * f0 -> Expression()
+     * f1 -> ";"
+     */
 
     public void visit(PostfixStatement statement) {
 	// TODO: Need to check whether Expression is a function
@@ -148,6 +219,7 @@ public class MhpVisitor extends DepthFirstVisitor {
 	TextVisitor t = new TextVisitor();
 	t.visit(expr);
 	
+	this.visit(expr);
 	// Add the expression to the L field of L
 	statement.L.add(statement.getLabel() + t.getText());
 
@@ -155,12 +227,12 @@ public class MhpVisitor extends DepthFirstVisitor {
     }
 
     /**
-    * f0 -> "System.out.println"
-    * f1 -> "("
-    * f2 -> Expression()
-    * f3 -> ")"
-    * f4 -> ";"
-    */
+     * f0 -> "System.out.println"
+     * f1 -> "("
+     * f2 -> Expression()
+     * f3 -> ")"
+     * f4 -> ";"
+     */
     public void visit(PrintlnStatement n) {
 	n.f0.accept(this);
 	n.f1.accept(this);
@@ -178,11 +250,11 @@ public class MhpVisitor extends DepthFirstVisitor {
 
 
     /**
-    * f0 -> Expression()
-    * f1 -> "="
-    * f2 -> Expression()
-    * f3 -> ";"
-    */
+     * f0 -> Expression()
+     * f1 -> "="
+     * f2 -> Expression()
+     * f3 -> ";"
+     */
 
     public void visit(Assignment n) { 
 	TextVisitor t = new TextVisitor();
@@ -196,13 +268,13 @@ public class MhpVisitor extends DepthFirstVisitor {
 
 
     /**
-    * f0 -> "final"
-    * f1 -> Type()
-    * f2 -> Identifier()
-    * f3 -> "="
-    * f4 -> Expression()
-    * f5 -> ";"
-    */
+     * f0 -> "final"
+     * f1 -> Type()
+     * f2 -> Identifier()
+     * f3 -> "="
+     * f4 -> Expression()
+     * f5 -> ";"
+     */
 
     public void visit(FinalVariableDeclaration n) {
 	TextVisitor t = new TextVisitor();
@@ -217,13 +289,13 @@ public class MhpVisitor extends DepthFirstVisitor {
 	printFinalDeclaration(n);
     }
 
-       /**
-    * f0 -> Type()
-    * f1 -> Identifier()
-    * f2 -> "="
-    * f3 -> Expression()
-    * f4 -> ";"
-    */
+    /**
+     * f0 -> Type()
+     * f1 -> Identifier()
+     * f2 -> "="
+     * f3 -> Expression()
+     * f4 -> ";"
+     */
 
     public void visit(UpdatableVariableDeclaration n) {
 	TextVisitor t = new TextVisitor();
@@ -237,13 +309,13 @@ public class MhpVisitor extends DepthFirstVisitor {
 	printUpdatableDeclaration(n);
     }
 
-       /**
-	* f0 -> "async"
-	* f1 -> "("
-	* f2 -> Expression()
-	* f3 -> ")"
-	* f4 -> Block()
-	*/
+    /**
+     * f0 -> "async"
+     * f1 -> "("
+     * f2 -> Expression()
+     * f3 -> ")"
+     * f4 -> Block()
+     */
 
     public void visit(AsyncStatement n) {
 	n.f0.accept(this);
@@ -258,35 +330,68 @@ public class MhpVisitor extends DepthFirstVisitor {
 
     
     /**
-    * f0 -> "{"
-    * f1 -> ( BlockStatement() )*
-    * f2 -> "}"
-    */
-   public void visit(Block n) {
-      n.f0.accept(this);
-      n.f1.accept(this);
-      n.f2.accept(this);
+     * f0 -> "{"
+     * f1 -> ( BlockStatement() )*
+     * f2 -> "}"
+     */
+    public void visit(Block n) {
+	n.f0.accept(this);
+	n.f1.accept(this);
+	n.f2.accept(this);
 
-      // Run through all the blocks and pick up the M, L and O values
-      if(n.f1.present()) {
-	  for(Enumeration e = n.f1.elements(); e.hasMoreElements(); ) {
-	      Object node = e.nextElement();
-	      unionSets(n, node);
-	  }
-      }
-   }
+	// Run through all the blocks and pick up the M, L and O values
+	if(n.f1.present()) {
+	    for(Enumeration e = n.f1.elements(); e.hasMoreElements(); ) {
+		Object node = e.nextElement();
+		unionSets(n, node);
+	    }
+	}
+    }
 
     /**
-    * f0 -> FinalVariableDeclaration()
-    *       | UpdatableVariableDeclaration()
-    *       | Statement()
-    */
+     * f0 -> FinalVariableDeclaration()
+     *       | UpdatableVariableDeclaration()
+     *       | Statement()
+     */
 
     public void visit(BlockStatement n) {
-      n.f0.accept(this);
-      Object o = n.f0.choice;
-      copySets(n, o);
-   }
+	n.f0.accept(this);
+	Object o = n.f0.choice;
+	copySets(n, o);
+    }
+
+    /**
+     * f0 -> PrimaryExpression()
+     * f1 -> "."
+     * f2 -> Identifier()
+     * f3 -> "("
+     * f4 -> ( ExpressionList() )?
+     * f5 -> ")"
+     */
+
+    public void visit(DotMethodCall n) {
+	n.f0.accept(this);
+	n.f1.accept(this);
+	n.f2.accept(this);
+	n.f3.accept(this);
+	n.f4.accept(this);
+	n.f5.accept(this);
+
+	// Find the method declaration and visit it
+	TextVisitor t = new TextVisitor();
+	t.visit(n.f2);
+	String methodName = t.getText();
+	
+	MethodFindVisitor finder = new MethodFindVisitor();
+	MethodDeclaration method = finder.find(_file, methodName);
+	this.visit(method);
+
+	t = new TextVisitor();
+	t.visit(n);
+
+	n.L.add(n.getLabel() + t.getText());
+	updateBlockProduction(n);
+    }
 
     private void updateBlockProduction(MhpStatement statement) {
 	// Update the global and local M, O, L values
