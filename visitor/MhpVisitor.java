@@ -7,12 +7,20 @@ public class MhpVisitor extends DepthFirstVisitor {
     public StringSet L;
     public StringSet O;
     private File _file;
-
+    private boolean _print;
     
     public MhpVisitor(){
 	M = new StringPairSet();
 	L = new StringSet();
 	O = new StringSet();
+	_print = true;
+    }
+
+    public MhpVisitor(boolean print) {
+	M = new StringPairSet();
+	L = new StringSet();
+	O = new StringSet();
+	_print = print;
     }
 
 
@@ -220,22 +228,7 @@ public class MhpVisitor extends DepthFirstVisitor {
 	t.visit(expr);
 	
 	this.visit(expr);
-	if(expr.f0.choice instanceof DotMethodCall == false) {
-	    // Add the expression to the L field of statement
-	    statement.L.add(statement.getLabel() + t.getText());
-	    updateBlockProduction(statement);
-	}
-	else {	    
-	    DotMethodCall method = (DotMethodCall)expr.f0.choice;
-	    statement.L = method.L;
-	    statement.M = method.M;
-	    statement.O = method.O;
-
-	    this.L = this.L.union(statement.L);
-	    this.M = this.M.union(statement.M);
-	    this.O = this.O.union(statement.O);
-		
-	}
+	checkExprMethod(expr, statement, t);
     }
 
     /**
@@ -254,11 +247,41 @@ public class MhpVisitor extends DepthFirstVisitor {
 	
 	TextVisitor t = new TextVisitor();
 	t.visit(n);
-	n.L.add(n.getLabel() + t.getText());
-	updateBlockProduction(n);
+	checkExprMethod(n.f2, n, t);
     }
 
 
+
+       /**
+    * f0 -> InclusiveOrExpression()
+    *       | EqualsExpression()
+    *       | NotEqualsExpression()
+    *       | GreaterThanExpression()
+    *       | PlusExpression()
+    *       | MinusExpression()
+    *       | TimesExpression()
+    *       | DivideExpression()
+    *       | SinExpression()
+    *       | CosExpression()
+    *       | PowExpression()
+    *       | AbsExpression()
+    *       | MapExpression()
+    *       | RegionConstant()
+    *       | UnaryMinusExpression()
+    *       | CoercionToIntExpression()
+    *       | CoercionToDoubleExpression()
+    *       | TypeAnnotatedExpression()
+    *       | FactoryBlock()
+    *       | ArrayAccess()
+    *       | DotDistribution()
+    *       | DotIsFirst()
+    *       | DotMethodCall()
+    *       | DotIdentifier()
+    *       | PrimaryExpression()
+    */
+   public void visit(Expression n) {
+       n.f0.accept(this);
+   }
 
 
     /**
@@ -270,12 +293,12 @@ public class MhpVisitor extends DepthFirstVisitor {
 
     public void visit(Assignment n) { 
 	TextVisitor t = new TextVisitor();
-	n.f0.accept(t);
-	n.f1.accept(t);
-	n.f2.accept(t);
-	n.f3.accept(t);
-	n.L.add(n.getLabel() + t.getText());
-	updateBlockProduction(n);
+	n.f0.accept(this);
+	n.f1.accept(this);
+	n.f2.accept(this);
+	n.f3.accept(this);
+	t.visit(n);
+	checkExprMethod(n.f2, n, t);
     }
 
 
@@ -289,10 +312,10 @@ public class MhpVisitor extends DepthFirstVisitor {
      */
 
     public void visit(FinalVariableDeclaration n) {
+	n.f4.accept(this);
 	TextVisitor t = new TextVisitor();
 	t.visit(n);
-	n.L.add(n.getLabel() + t.getText());
-	updateBlockProduction(n);
+	checkExprMethod(n.f4, n, t);
 	printFinalDeclaration(n);
     }
 
@@ -305,10 +328,10 @@ public class MhpVisitor extends DepthFirstVisitor {
      */
 
     public void visit(UpdatableVariableDeclaration n) {
+	n.f3.accept(this);
 	TextVisitor t = new TextVisitor();
 	t.visit(n);
-	n.L.add(n.getLabel() + t.getText());
-	updateBlockProduction(n);
+	checkExprMethod(n.f3, n, t);
 	printUpdatableDeclaration(n);
     }
 
@@ -363,6 +386,24 @@ public class MhpVisitor extends DepthFirstVisitor {
 	copySets(n, o);
     }
 
+       /**
+    * f0 -> "return"
+    * f1 -> [ Expression() ]
+    * f2 -> ";"
+    */
+   public void visit(ReturnStatement n) {
+       n.f0.accept(this);
+       n.f1.accept(this);
+       n.f2.accept(this);
+
+       TextVisitor t = new TextVisitor();
+       t.visit(n);
+       if(n.f1.present()) {
+	   checkExprMethod((Expression)n.f1.node, n, t);
+       }
+   }
+
+
     /**
      * f0 -> PrimaryExpression()
      * f1 -> "."
@@ -379,7 +420,6 @@ public class MhpVisitor extends DepthFirstVisitor {
 	n.f3.accept(this);
 	n.f4.accept(this);
 	n.f5.accept(this);
-
 	// Find the method declaration and visit it
 	TextVisitor t = new TextVisitor();
 	t.visit(n.f2);
@@ -443,6 +483,27 @@ public class MhpVisitor extends DepthFirstVisitor {
 	this.L = ldash;
 
     }
+    private void updateMethodProduction(MhpStatement statement, DotMethodCall method) {
+	statement.L = method.L;
+	statement.M = method.M;
+	statement.O = method.O;
+	
+	this.L = this.L.union(statement.L);
+	this.M = this.M.union(statement.M);
+	this.O = this.O.union(statement.O);
+
+    }
+
+    private void checkExprMethod(Expression expr, MhpStatement parent, TextVisitor t) {
+	if(expr.f0.choice instanceof DotMethodCall == false) {
+	    parent.L.add(parent.getLabel() + t.getText());
+	    updateBlockProduction(parent);
+	}
+	else {
+	    DotMethodCall method = (DotMethodCall)expr.f0.choice;
+	    updateMethodProduction(parent, method);
+	}
+    }
 
     private void updateAsyncProduction(MhpStatement statement) {
 	this.O = this.O.union(statement.L);
@@ -489,13 +550,15 @@ public class MhpVisitor extends DepthFirstVisitor {
     }
 
     private void printMOL(MhpStatement s, String label) {
-	System.out.println(label);
-	System.out.println("MHP: ");
-	System.out.println(s.M);
-	System.out.println("O: ");
-	System.out.println(s.O);
-	System.out.println("L: ");
-	System.out.println(s.L);
+	if(_print) {
+	    System.out.println(label);
+	    System.out.println("MHP: ");
+	    System.out.println(s.M);
+	    System.out.println("O: ");
+	    System.out.println(s.O);
+	    System.out.println("L: ");
+	    System.out.println(s.L);
+	}
 
     }
 

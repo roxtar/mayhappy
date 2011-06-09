@@ -10,18 +10,20 @@ package syntaxtree;
  * f1 -> [ Expression() ]
  * f2 -> ";"
  */
-public class ReturnStatement implements Node {
+public class ReturnStatement extends MhpStatement implements Node {
    public NodeToken f0;
    public NodeOptional f1;
    public NodeToken f2;
 
    public ReturnStatement(NodeToken n0, NodeOptional n1, NodeToken n2) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
    }
 
    public ReturnStatement(NodeOptional n0) {
+       super();
       f0 = new NodeToken("return");
       f1 = n0;
       f2 = new NodeToken(";");

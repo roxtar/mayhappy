@@ -1,3 +1,4 @@
+PROJECT=cs239_hw2
 MAIN_CLASS=$(MAIN_SRC:.java=.class)
 
 MAIN_SRC=MayHappyMain.java
@@ -40,7 +41,8 @@ jtb.out.jj : miniX10.jj
 	jtb $<
 
 clean: 
-	rm -rf *.class syntaxtree/*.class visitor/*.class 
+	rm -rf *.class syntaxtree/*.class visitor/*.class $(PROJECT).zip
 
-
+zip:
+	zip $(PROJECT).zip *.java *.jj README syntaxtree/*.java examples/*.x10 set/*.java visitor/*.java Makefile
 

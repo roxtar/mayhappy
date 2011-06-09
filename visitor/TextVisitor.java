@@ -182,6 +182,20 @@ public class TextVisitor extends DepthFirstVisitor {
 	n.f4.accept(this);
     }
 
+       /**
+    * f0 -> "return"
+    * f1 -> [ Expression() ]
+    * f2 -> ";"
+    */
+    public void visit(ReturnStatement n) {
+	addIndent();
+      n.f0.accept(this);      
+      addSpace();
+      n.f1.accept(this);
+      n.f2.accept(this);
+   }
+
+
 
 
     private void addSpace() {

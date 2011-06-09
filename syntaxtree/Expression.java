@@ -32,10 +32,11 @@ package syntaxtree;
  *       | DotIdentifier()
  *       | PrimaryExpression()
  */
-public class Expression implements Node {
+public class Expression extends MhpStatement implements Node {
    public NodeChoice f0;
 
    public Expression(NodeChoice n0) {
+       super();
       f0 = n0;
    }
 

@@ -20,19 +20,10 @@ public class MhpVisitorTest extends TestCase {
 
     public void testMhpSimple() {
 	File f = Parse("examples/Simple.x10");
-	MhpVisitor v = new MhpVisitor();
+	MhpVisitor v = new MhpVisitor(false);
 	v.visit(f);
 	assertEquals(v.M.size(), 8);
-	assertTrue(v.M.contains(new StringPair("L5:i=i+2;","L3:i=i+3;")));
-	assertTrue(v.M.contains(new StringPair("L2:i=i+1;","L4:i=i-1;")));			     
-    }
-
-    public void ftestMhpFinish() {	
-	File f = Parse("examples/Finish.x10");
-	MhpVisitor v = new MhpVisitor();
-	v.visit(f);
-	assertEquals(v.M.size(), 4);
-	assertTrue(v.M.contains(new StringPair("i = i + 1 ;","i = i + 9 ;")));
-	assertTrue(v.M.contains(new StringPair("i = i + 9 ;","i = i + 3 ;")));		
+	assertTrue(v.M.contains(new StringPair("L5:i = i+2;","L3:i = i+3;")));
+	assertTrue(v.M.contains(new StringPair("L2:i = i+1;","L4:i = i-1;")));			     
     }
 }
