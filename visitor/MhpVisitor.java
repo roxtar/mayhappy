@@ -203,7 +203,7 @@ public class MhpVisitor extends DepthFirstVisitor {
 	    
 	this.O = this.O.union(n.f7.O);
 	this.L = this.L.union(n.f7.L);
-
+	
 	
     }
 
@@ -220,8 +220,14 @@ public class MhpVisitor extends DepthFirstVisitor {
 	t.visit(expr);
 	
 	this.visit(expr);
-	// Add the expression to the L field of L
-	statement.L.add(statement.getLabel() + t.getText());
+	if(expr.f0.choice instanceof DotMethodCall == false) {
+	    // Add the expression to the L field of statement
+	    statement.L.add(statement.getLabel() + t.getText());
+	}
+	else {	    
+	    DotMethodCall method = (DotMethodCall)expr.f0.choice;
+	    statement.L = method.L;
+	}
 
 	updateBlockProduction(statement);
     }
@@ -278,12 +284,7 @@ public class MhpVisitor extends DepthFirstVisitor {
 
     public void visit(FinalVariableDeclaration n) {
 	TextVisitor t = new TextVisitor();
-	n.f0.accept(t);
-	n.f1.accept(t);
-	n.f2.accept(t);
-	n.f3.accept(t);
-	n.f4.accept(t);
-	n.f5.accept(t);
+	t.visit(n);
 	n.L.add(n.getLabel() + t.getText());
 	updateBlockProduction(n);
 	printFinalDeclaration(n);
@@ -299,11 +300,7 @@ public class MhpVisitor extends DepthFirstVisitor {
 
     public void visit(UpdatableVariableDeclaration n) {
 	TextVisitor t = new TextVisitor();
-	n.f0.accept(t);
-	n.f1.accept(t);
-	n.f2.accept(t);
-	n.f3.accept(t);
-	n.f4.accept(t);
+	t.visit(n);
 	n.L.add(n.getLabel() + t.getText());
 	updateBlockProduction(n);
 	printUpdatableDeclaration(n);
@@ -389,9 +386,35 @@ public class MhpVisitor extends DepthFirstVisitor {
 	t = new TextVisitor();
 	t.visit(n);
 
-	n.L.add(n.getLabel() + t.getText());
-	updateBlockProduction(n);
+	n.L = method.L;	      
+	n.O = method.O;
+	n.M = method.M;
+
     }
+
+       /**
+    * f0 -> "public"
+    * f1 -> ReturnType()
+    * f2 -> Identifier()
+    * f3 -> "("
+    * f4 -> ( FormalParameterList() )?
+    * f5 -> ")"
+    * f6 -> Block()
+    */
+   public void visit(MethodDeclaration n) {
+      n.f0.accept(this);
+      n.f1.accept(this);
+      n.f2.accept(this);
+      n.f3.accept(this);
+      n.f4.accept(this);
+      n.f5.accept(this);
+      n.f6.accept(this);
+      n.L = n.f6.L;
+      n.M = n.f6.M;
+      n.O = n.f6.O;
+	  
+   }
+
 
     private void updateBlockProduction(MhpStatement statement) {
 	// Update the global and local M, O, L values
