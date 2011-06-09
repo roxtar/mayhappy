@@ -117,8 +117,5 @@ Rules:
 	loop s1 -- M = symcross(O_s1, L_s1), O=O_s1, L=L_s1
 	s1;s2 -- M = symcross(O_s1, L_s2), O = O_s1 U O_s2, L = L_s1 U L_s2
 
-TODO:
-
-Handle the following statements:
-	IfStatement
-	
+Author:
+Rohit Kumar	
