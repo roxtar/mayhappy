@@ -13,7 +13,7 @@ package syntaxtree;
  * f4 -> Statement()
  * f5 -> [ ElseClause() ]
  */
-public class IfStatement implements Node {
+public class IfStatement extends MhpStatement implements Node {
    public NodeToken f0;
    public NodeToken f1;
    public Expression f2;
@@ -22,6 +22,7 @@ public class IfStatement implements Node {
    public NodeOptional f5;
 
    public IfStatement(NodeToken n0, NodeToken n1, Expression n2, NodeToken n3, Statement n4, NodeOptional n5) {
+       super();
       f0 = n0;
       f1 = n1;
       f2 = n2;
