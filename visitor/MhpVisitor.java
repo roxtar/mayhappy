@@ -223,13 +223,19 @@ public class MhpVisitor extends DepthFirstVisitor {
 	if(expr.f0.choice instanceof DotMethodCall == false) {
 	    // Add the expression to the L field of statement
 	    statement.L.add(statement.getLabel() + t.getText());
+	    updateBlockProduction(statement);
 	}
 	else {	    
 	    DotMethodCall method = (DotMethodCall)expr.f0.choice;
 	    statement.L = method.L;
-	}
+	    statement.M = method.M;
+	    statement.O = method.O;
 
-	updateBlockProduction(statement);
+	    this.L = this.L.union(statement.L);
+	    this.M = this.M.union(statement.M);
+	    this.O = this.O.union(statement.O);
+		
+	}
     }
 
     /**

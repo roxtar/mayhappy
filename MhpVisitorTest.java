@@ -23,8 +23,8 @@ public class MhpVisitorTest extends TestCase {
 	MhpVisitor v = new MhpVisitor();
 	v.visit(f);
 	assertEquals(v.M.size(), 8);
-	assertTrue(v.M.contains(new StringPair("i = i + 2 ;","i = i + 3 ;")));
-	assertTrue(v.M.contains(new StringPair("i = i + 1 ;","i = i - 1 ;")));		     
+	assertTrue(v.M.contains(new StringPair("L5:i=i+2;","L3:i=i+3;")));
+	assertTrue(v.M.contains(new StringPair("L2:i=i+1;","L4:i=i-1;")));			     
     }
 
     public void ftestMhpFinish() {	
