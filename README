@@ -16,31 +16,55 @@ Build:
 	make
 
 Run:
-	java MayHappyMain ClassName.FuncName < input.x10
+	java MayHappyMain examples/Simple.x10
 
-Where input.x10 is a x10 1.5 source file. Where ClassName.FuncName is
-the method within the input source file which has to be analyzed for
-MHP.
+Where Simple.x10 is a Featherweight X10 source file. The analysis
+will follow X10's program executionp path -- i.e it will follow the
+flow of statements as described in the main function.
 
 Output:
 
 For each line of ClassName.FuncName the MHP set will be shown.
 
-For example, for the function:
+For example, for the code:
 
- void foo() {
-     int x = 0;
-     async x++;
-     async x--;
+ public class Simple {    
+    public static void main(String[] args) {
+	new Foo().foo();
+    }
 }
 
-The result should be :
+class Foo {
+    public void foo() {
+	int i = 0;
+	System.out.println("Hello there");
+	async (0) {
+	    i = i + 1;
+	    i = i + 3;
+	}	
+	i  = i -1;
+	i = i + 2;
+    }
+}
 
-1   void foo() {
-2        int x = 0; // M = {}
-3	 async x++; // M = {}
-4	 async x--; // M = {(line 3, async x++)}
-5 }
+The final result should be :
+
+MHP (End)
+{
+(L2:i=i+1;, L4:i=i-1;)
+(L5:i=i+2;, L3:i=i+3;)
+(L3:i=i+3;, L5:i=i+2;)
+(L4:i=i-1;, L2:i=i+1;)
+(L3:i=i+3;, L4:i=i-1;)
+(L2:i=i+1;, L5:i=i+2;)
+(L4:i=i-1;, L3:i=i+3;)
+(L5:i=i+2;, L2:i=i+1;)
+}
+
+The above listing shows the statements which can be executed in
+parallel (may happen in parallel -- MHP) to the end of the
+program. The output actually contains more detail. In fact it contains
+the MHP sets at each statement. 
 
 Notes:
 
@@ -79,13 +103,17 @@ and sets the (M, O, L) values of each statement. Initially (M_g, O_g,
 L_g) are all ({}, {}, {}) empty sets. When the MhpVisitor traverses
 the syntax tree, these sets are populated according to the rules.
 
-Rule:
+Rules:
 
-	async s1 -- M = M_g, O = O_g U O_s1, L = L_s1
-	finish s1 -- M = M_g, O = O_g - L_s1, L = L_s1
-	loop s1 -- M = M_g U symcross(O_s1, L_s1), O=O_g, L=L_g
+	async s1 -- M = M, O = L_s1, L = L_s1
+	finish s1 -- M = M, O = O_s1 - L_s1, L = L_s1
+	loop s1 -- M = symcross(O_s1, L_s1), O=O_s1, L=L_s1
+	s1;s2 -- M = symcross(O_s1, L_s2), O = O_s1 U O_s2, L = L_s1 U L_s2
 
 TODO:
+
+Handle the following statements:
 	IfStatement
 	ReturnStatement
 	ThrowStatement
+	
