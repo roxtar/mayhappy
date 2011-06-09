@@ -66,6 +66,13 @@ parallel (may happen in parallel -- MHP) to the end of the
 program. The output actually contains more detail. In fact it contains
 the MHP sets at each statement. 
 
+In the output at any stage the M, O, L values denote:
+   M -- The statements that may be executing in parallel
+	at that particular stage.
+   O -- The statements which will be executing after the end of 
+	the particular statement.
+   L -- the statements which were executed as part of the statement.
+
 Notes:
 
 1. The jtb example to invoke the visitor on the top level javacc

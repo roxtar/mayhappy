@@ -33,8 +33,10 @@ public class MhpVisitor extends DepthFirstVisitor {
 	_file = n;
 	n.f0.accept(this);
 	n.f1.accept(this);
-	System.out.println("MHP (End)");
-	System.out.println(this.M);
+	if(_print) {
+	    System.out.println("MHP (End)");
+	    System.out.println(this.M);
+	}
     }
 
 
@@ -131,11 +133,10 @@ public class MhpVisitor extends DepthFirstVisitor {
 	TextVisitor t = new TextVisitor();
 	n.f0.accept(this);
 	n.f1.accept(this);
-	n.f2.accept(this);
+	n.f2.accept(this);	
 	n.f3.accept(this);
 	n.f4.accept(this);
 	n.f5.accept(this);
-	print("In if statement");
 	t.visit(n);
 	Expression expr = n.f2;
 	Statement block = n.f4;
@@ -184,7 +185,15 @@ public class MhpVisitor extends DepthFirstVisitor {
 	    n.f3.accept(this);
 	    n.f4.accept(this);
 	    
+		
 	    Statement s1 = n.f4;
+	    DotMethodCall method = getDotMethod(n.f2);
+	    if(method != null) {
+		s1.L = s1.L.union(method.L);
+		s1.M = s1.M.union(method.M);
+		s1.O = s1.O.union(method.O);
+	    }
+
 	    // Apply the rule loop s1
 	    StringPairSet mdash = this.M.union(s1.O.symcross(s1.L));
 	    if(mdash.equals(this.M))
@@ -223,6 +232,12 @@ public class MhpVisitor extends DepthFirstVisitor {
 	    n.f7.accept(this);
 	    
 	    Statement s1 = n.f7;
+	    DotMethodCall method = getDotMethod(n.f5);
+	    if(method != null) {
+		s1.L = s1.L.union(method.L);
+		s1.M = s1.M.union(method.M);
+		s1.O = s1.O.union(method.O);
+	    }
 	    // Apply the rule loop s1
 	    StringPairSet mdash = this.M.union(s1.O.symcross(s1.L));
 	    if(mdash.equals(this.M))
@@ -368,12 +383,18 @@ public class MhpVisitor extends DepthFirstVisitor {
 
     public void visit(AsyncStatement n) {
 	n.f0.accept(this);
-	n.f1.accept(this);
+	n.f1.accept(this);	
 	n.f2.accept(this);
 	n.f3.accept(this);
 	n.f4.accept(this);
+	DotMethodCall method = getDotMethod(n.f2);
+	if(method != null) {
+	    n.L = n.L.union(method.L);
+	    n.O = n.O.union(method.O);
+	    n.M = n.M.union(method.M);
+	}
 	copySets(n, n.f4);
-	n.O = n.O.union(n.L);
+	n.O = n.O.union(n.f4.L);
 	updateAsyncProduction(n);
     }
 
@@ -521,9 +542,6 @@ public class MhpVisitor extends DepthFirstVisitor {
 				      Statement block,
 				      MhpStatement parent, 
 				      TextVisitor t) {
-	parent.L.union(block.L);
-	parent.M.union(block.M);
-	parent.O.union(block.O);
 	if(expr.f0.choice instanceof DotMethodCall == false) {	    
 	    updateBlockProduction(parent);
 	}
@@ -531,6 +549,13 @@ public class MhpVisitor extends DepthFirstVisitor {
 	    DotMethodCall method = (DotMethodCall)expr.f0.choice;
 	    updateMethodProduction(parent, method);
 	}
+
+
+	parent.L = parent.L.union(block.L);	
+	parent.M = parent.M.union(block.M);
+	parent.O = parent.O.union(block.O);
+
+
     }
 
     private void checkExprMethod(Expression expr, 
@@ -556,16 +581,16 @@ public class MhpVisitor extends DepthFirstVisitor {
     }
 
     private void updateAsyncProduction(MhpStatement statement) {
-	this.O = this.O.union(statement.L);
+	this.O = this.O.union(statement.O);
 	this.L = this.L.union(statement.L);	    
     }
 
     private void copySets(MhpStatement n, Object o) {
 	if(o instanceof MhpStatement) {
 	    MhpStatement statement = (MhpStatement) o;
-	    n.M = statement.M;
-	    n.L = statement.L;
-	    n.O = statement.O;
+	    n.M = n.M.union(statement.M);
+	    n.L = n.L.union(statement.L);
+	    n.O = n.O.union(statement.O);
 	}
     }
 
@@ -577,10 +602,18 @@ public class MhpVisitor extends DepthFirstVisitor {
 	    n.O = n.O.union(statement.O);
 	}
     }
+    private DotMethodCall getDotMethod(Expression expr) {
+	if(expr.f0.choice instanceof DotMethodCall) {
+	    return (DotMethodCall)expr.f0.choice;
+	}
+	return null;
+    }
 
     private void print(String s) {
 	System.out.println(s);
     }
+
+
 
     private void printFinalDeclaration(FinalVariableDeclaration s) {
 	TextVisitor t = new TextVisitor();
